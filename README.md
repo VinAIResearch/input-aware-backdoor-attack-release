@@ -2,7 +2,7 @@
 
 Implementation of the paper in PyTorch.
 
-- Training and testing code of Input-aware Dynamic Backdoor Attack.
+- Training and evaluation code.
 - Defense experiments used in the paper.
 - Image regularization tests.
 
@@ -14,7 +14,7 @@ $ pip install -r requirements.txt
 ```
 * Download and organize GTSRB data from its official website:
 ```bash
-$ bash prepare_gtsrb.sh
+$ bash gtsrb_download.sh
 ```
 
 ## Training code
