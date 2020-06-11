@@ -1,0 +1,3 @@
+Pytorch implementation for Input-aware backdoor attack
+
+Supported dataset: GTSRB, MNIST, CIFAR10
