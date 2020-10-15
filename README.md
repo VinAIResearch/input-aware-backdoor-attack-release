@@ -1,6 +1,6 @@
 # Input-Aware Dynamic Backdoor Attack
 
-This is an implematation of the NeurIPS paper *Input-Aware Dynamic Backdoor Attack* in PyTorch.
+This is an implematation of the NeurIPS paper **Input-Aware Dynamic Backdoor Attack** in PyTorch.
 
 - Training and evaluation code.
 - Defense experiments used in the paper.
@@ -29,8 +29,7 @@ where the parameters are the following:
 The trained model with be saved at the path `checkpoints/<datasetName>/<attackMode>/<attackMode>_<datasetName>_ckpt.pth.tar`
 
 ## Pretrained models
-You can download the pretrained `all2one` models used in our paper [here](https://drive.google.com/file/d/1b8-1Susq5vk_QXadLS9pH45F68z3FAOS/view?usp=sharing).  
-Just extract the zip file inside the `checkpoints` folder to use these models.
+You can download the pretrained `all2one` models used in our paper [here](https://drive.google.com/file/d/1b8-1Susq5vk_QXadLS9pH45F68z3FAOS/view?usp=sharing). Just extract the zip file inside the `checkpoints` folder to use these models.
 
 ## Evaluation code
 Run command
