@@ -1,5 +1,7 @@
 # Input-Aware Dynamic Backdoor Attack
 
+<img src="Teaser_fig.png" width="900px"/>
+
 This is an implematation of the NeurIPS paper **Input-Aware Dynamic Backdoor Attack** in PyTorch.
 
 - Training and evaluation code.
