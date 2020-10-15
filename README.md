@@ -1,6 +1,6 @@
 # Input-Aware Dynamic Backdoor Attack
 
-Implementation of the paper in PyTorch.
+This is an implematation of the NeurIPS paper *Input-Aware Dynamic Backdoor Attack* in PyTorch.
 
 - Training and evaluation code.
 - Defense experiments used in the paper.
@@ -29,7 +29,8 @@ where the parameters are the following:
 The trained model with be saved at the path `checkpoints/<datasetName>/<attackMode>/<attackMode>_<datasetName>_ckpt.pth.tar`
 
 ## Pretrained models
-The trained `all2one` models used in our papers are save in folder `pretrained_checkpoints`. Just rename that folder to `checkpoints` to use these models.
+You can download the pretrained `all2one` models used in our paper [here](https://drive.google.com/file/d/1b8-1Susq5vk_QXadLS9pH45F68z3FAOS/view?usp=sharing).  
+Just extract the zip file inside the `checkpoints` folder to use these models.
 
 ## Evaluation code
 Run command
@@ -85,3 +86,18 @@ $ python test_regularization.py --dataset <datasetName> --attack_mode <attackMod
 ```
 The results will be printed on screen.
 
+## References
+
+If you find this code is useful for your research, please cite our paper
+```
+@article{nguyen2020inputaware,
+  title={Input-Aware Dynamic Backdoor Attack},
+  author={Nguyen, Anh and Tran, Anh},
+  booktitle={Proceedings of Advances in Neural Information Processing Systems},
+  year={2020}
+}
+```
+
+## Contacts
+
+If you have any questions, drop an email to _v.anhtt152@vinai.io_ , _v.anhnt479@vinai.io_  or leave a message below with GitHub (log-in is needed).
