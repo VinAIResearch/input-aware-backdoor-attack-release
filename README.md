@@ -2,7 +2,7 @@
 
 <img src="Teaser_fig.png" width="800px"/>
 
-This is an implematation of the NeurIPS paper **Input-Aware Dynamic Backdoor Attack** in PyTorch.
+This is an implematation of the NeurIPS paper **[Input-Aware Dynamic Backdoor Attack](https://arxiv.org/abs/2010.08138)** in PyTorch.
 
 - Training and evaluation code.
 - Defense experiments used in the paper.
