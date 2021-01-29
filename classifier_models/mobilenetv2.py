@@ -1,15 +1,16 @@
-'''MobileNetV2 in PyTorch.
+"""MobileNetV2 in PyTorch.
 
 See the paper "Inverted Residuals and Linear Bottlenecks:
 Mobile Networks for Classification, Detection and Segmentation" for more details.
-'''
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
 class Block(nn.Module):
-    '''expand + depthwise + pointwise'''
+    """expand + depthwise + pointwise"""
+
     def __init__(self, in_planes, out_planes, expansion, stride):
         super(Block, self).__init__()
         self.stride = stride
@@ -33,19 +34,21 @@ class Block(nn.Module):
         out = F.relu(self.bn1(self.conv1(x)))
         out = F.relu(self.bn2(self.conv2(out)))
         out = self.bn3(self.conv3(out))
-        out = out + self.shortcut(x) if self.stride==1 else out
+        out = out + self.shortcut(x) if self.stride == 1 else out
         return out
 
 
 class MobileNetV2(nn.Module):
     # (expansion, out_planes, num_blocks, stride)
-    cfg = [(1,  16, 1, 1),
-           (6,  24, 2, 1),  # NOTE: change stride 2 -> 1 for CIFAR10
-           (6,  32, 3, 2),
-           (6,  64, 4, 2),
-           (6,  96, 3, 1),
-           (6, 160, 3, 2),
-           (6, 320, 1, 1)]
+    cfg = [
+        (1, 16, 1, 1),
+        (6, 24, 2, 1),  # NOTE: change stride 2 -> 1 for CIFAR10
+        (6, 32, 3, 2),
+        (6, 64, 4, 2),
+        (6, 96, 3, 1),
+        (6, 160, 3, 2),
+        (6, 320, 1, 1),
+    ]
 
     def __init__(self, num_classes=10):
         super(MobileNetV2, self).__init__()
@@ -60,7 +63,7 @@ class MobileNetV2(nn.Module):
     def _make_layers(self, in_planes):
         layers = []
         for expansion, out_planes, num_blocks, stride in self.cfg:
-            strides = [stride] + [1]*(num_blocks-1)
+            strides = [stride] + [1] * (num_blocks - 1)
             for stride in strides:
                 layers.append(Block(in_planes, out_planes, expansion, stride))
                 in_planes = out_planes
@@ -75,5 +78,3 @@ class MobileNetV2(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
-
-

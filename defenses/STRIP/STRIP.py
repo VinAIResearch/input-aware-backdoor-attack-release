@@ -1,18 +1,20 @@
-import torch
 import os
-import torchvision
-import numpy as np
-import cv2
-import torch.nn.functional as F
-from torchvision import transforms
-from dataloader import get_dataloader, get_dataset
-from config import get_argument
-
 import sys
-sys.path.insert(0,'../..')
+
+import cv2
+import numpy as np
+import torch
+import torch.nn.functional as F
+import torchvision
+from config import get_argument
+from dataloader import get_dataloader, get_dataset
+from torchvision import transforms
+
+
+sys.path.insert(0, "../..")
 from classifier_models import PreActResNet18
+from networks.models import Generator, NetC_MNIST
 from utils import progress_bar
-from networks.models import NetC_MNIST, Generator
 
 
 class Normalize:
@@ -21,7 +23,7 @@ class Normalize:
         self.expected_values = expected_values
         self.variance = variance
         assert self.n_channels == len(self.expected_values)
-    
+
     def __call__(self, x):
         x_clone = x.clone()
         for channel in range(self.n_channels):
@@ -35,7 +37,7 @@ class Denormalize:
         self.expected_values = expected_values
         self.variance = variance
         assert self.n_channels == len(self.expected_values)
-    
+
     def __call__(self, x):
         x_clone = x.clone()
         for channel in range(self.n_channels):
@@ -46,7 +48,7 @@ class Denormalize:
 class STRIP:
     def _superimpose(self, background, overlay):
         output = cv2.addWeighted(background, 1, overlay, 1, 0)
-        if(len(output.shape) == 2):
+        if len(output.shape) == 2:
             output = np.expand_dims(output, 2)
         return output
 
@@ -65,26 +67,26 @@ class STRIP:
         return entropy_sum / self.n_sample
 
     def _get_denormalize(self, opt):
-        if(opt.dataset == 'cifar10'):
+        if opt.dataset == "cifar10":
             denormalizer = Denormalize(opt, [0.4914, 0.4822, 0.4465], [0.247, 0.243, 0.261])
-        elif(opt.dataset == 'mnist'):
+        elif opt.dataset == "mnist":
             denormalizer = Denormalize(opt, [0.5], [0.5])
-        elif(opt.dataset == 'gtsrb'):
+        elif opt.dataset == "gtsrb":
             denormalizer = None
-        else: 
+        else:
             raise Exception("Invalid dataset")
         return denormalizer
 
     def _get_normalize(self, opt):
-        if(opt.dataset == 'cifar10'):
+        if opt.dataset == "cifar10":
             normalizer = Normalize(opt, [0.4914, 0.4822, 0.4465], [0.247, 0.243, 0.261])
-        elif(opt.dataset == 'mnist'):
+        elif opt.dataset == "mnist":
             normalizer = Normalize(opt, [0.5], [0.5])
-        elif(opt.dataset == 'gtsrb'):
+        elif opt.dataset == "gtsrb":
             normalizer = None
         else:
             raise Exception("Invalid dataset")
-        if(normalizer):
+        if normalizer:
             transform = transforms.Compose([transforms.ToTensor(), normalizer])
         else:
             transform = transforms.ToTensor()
@@ -94,43 +96,43 @@ class STRIP:
         super().__init__()
         self.n_sample = opt.n_sample
         self.normalizer = self._get_normalize(opt)
-        self.denormalizer = self._get_denormalize(opt)   
+        self.denormalizer = self._get_denormalize(opt)
         self.device = opt.device
-        
+
     def normalize(self, x):
-        if(self.normalizer):
+        if self.normalizer:
             x = self.normalizer(x)
         return x
 
     def denormalize(self, x):
-        if(self.denormalizer):
+        if self.denormalizer:
             x = self.denormalizer(x)
         return x
-        
+
     def __call__(self, background, dataset, classifier):
         return self._get_entropy(background, dataset, classifier)
 
 
-def strip(opt, mode='clean'):
-    if(opt.dataset == 'mnist'):
+def strip(opt, mode="clean"):
+    if opt.dataset == "mnist":
         opt.input_height = 28
         opt.input_width = 28
         opt.input_channel = 1
-    elif(opt.dataset == 'cifar10'):
+    elif opt.dataset == "cifar10":
         opt.input_height = 32
         opt.input_width = 32
         opt.input_channel = 3
-    elif(opt.dataset == 'gtsrb'):
+    elif opt.dataset == "gtsrb":
         opt.input_height = 32
         opt.input_width = 32
         opt.input_channel = 3
     else:
         raise Exception("Invalid dataset")
-    
+
     # Prepare pretrained classifier
-    if(opt.dataset == 'mnist'):
+    if opt.dataset == "mnist":
         netC = NetC_MNIST()
-    elif(opt.dataset == 'cifar10'):
+    elif opt.dataset == "cifar10":
         netC = PreActResNet18()
     else:
         netC = PreActResNet18(num_classes=43)
@@ -138,8 +140,8 @@ def strip(opt, mode='clean'):
         param.requires_grad = False
     netC.to(opt.device)
     netC.eval()
-        
-    if(mode != 'clean'):  
+
+    if mode != "clean":
         netG = Generator(opt)
         for param in netG.parameters():
             param.requires_grad = False
@@ -150,15 +152,15 @@ def strip(opt, mode='clean'):
     ckpt_dir = os.path.join(opt.checkpoints, opt.dataset, opt.attack_mode)
     ckpt_path = os.path.join(ckpt_dir, "{}_{}_ckpt.pth.tar".format(opt.attack_mode, opt.dataset))
     state_dict = torch.load(ckpt_path)
-    netC.load_state_dict(state_dict['netC'])
-    if(mode != 'clean'):
-        netG.load_state_dict(state_dict['netG'])
-        netM = Generator(opt, out_channels=1)  
-        netM.load_state_dict(state_dict['netM'])
+    netC.load_state_dict(state_dict["netC"])
+    if mode != "clean":
+        netG.load_state_dict(state_dict["netG"])
+        netM = Generator(opt, out_channels=1)
+        netM.load_state_dict(state_dict["netM"])
         netM.to(opt.device)
         netM.eval()
         netM.requires_grad_(False)
-    
+
     # Prepare test set
     testset = get_dataset(opt, train=False)
     opt.bs = opt.n_test
@@ -166,22 +168,22 @@ def strip(opt, mode='clean'):
 
     # STRIP detector
     strip_detector = STRIP(opt)
-    
+
     # Entropy list
     list_entropy_trojan = []
     list_entropy_benign = []
 
-    if(mode == 'attack'):
+    if mode == "attack":
         # Testing with perturbed data
         print("Testing with bd data !!!!")
         inputs, targets = next(iter(test_dataloader))
         inputs = inputs.to(opt.device)
         patterns = netG(inputs)
         patterns = netG.normalize_pattern(patterns)
-        batch_masks = netM.threshold(netM(inputs))      
+        batch_masks = netM.threshold(netM(inputs))
         bd_inputs = inputs + (patterns - inputs) * batch_masks
-        
-        bd_inputs = netG.denormalize_pattern(bd_inputs) * 255.
+
+        bd_inputs = netG.denormalize_pattern(bd_inputs) * 255.0
         bd_inputs = bd_inputs.detach().cpu().numpy()
         bd_inputs = np.clip(bd_inputs, 0, 255).astype(np.uint8).transpose((0, 2, 3, 1))
         for index in range(opt.n_test):
@@ -203,42 +205,42 @@ def strip(opt, mode='clean'):
             entropy = strip_detector(background, testset, netC)
             list_entropy_benign.append(entropy)
             progress_bar(index, opt.n_test)
-        
+
     return list_entropy_trojan, list_entropy_benign
-    
+
 
 def main():
     opt = get_argument().parse_args()
-    if('2' in opt.attack_mode):
-        mode = 'attack'
+    if "2" in opt.attack_mode:
+        mode = "attack"
     else:
-        mode = 'clean'
+        mode = "clean"
 
     lists_entropy_trojan = []
     lists_entropy_benign = []
-    for test_round in range(opt.test_rounds):  
+    for test_round in range(opt.test_rounds):
         list_entropy_trojan, list_entropy_benign = strip(opt, mode)
         lists_entropy_trojan += list_entropy_trojan
         lists_entropy_benign += list_entropy_benign
 
     # Save result to file
     result_dir = os.path.join(opt.results, opt.dataset)
-    if(not os.path.exists(result_dir)):
+    if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     result_path = os.path.join(result_dir, opt.attack_mode)
-    if(not os.path.exists(result_path)):
+    if not os.path.exists(result_path):
         os.makedirs(result_path)
     result_path = os.path.join(result_path, "{}_{}_output.txt".format(opt.attack_mode, opt.dataset))
 
-    with open(result_path, 'a+') as f:
+    with open(result_path, "a+") as f:
         for index in range(len(lists_entropy_trojan)):
-            if(index < len(lists_entropy_trojan) - 1):
+            if index < len(lists_entropy_trojan) - 1:
                 f.write("{} ".format(lists_entropy_trojan[index]))
             else:
                 f.write("{}".format(lists_entropy_trojan[index]))
-        f.write('\n')
+        f.write("\n")
         for index in range(len(lists_entropy_benign)):
-            if(index < len(lists_entropy_benign) - 1):
+            if index < len(lists_entropy_benign) - 1:
                 f.write("{} ".format(lists_entropy_benign[index]))
             else:
                 f.write("{}".format(lists_entropy_benign[index]))
@@ -246,11 +248,11 @@ def main():
     min_entropy = min(lists_entropy_trojan + lists_entropy_benign)
     # Determining
     print("Min entropy trojan: {}, Detection boundary: {}".format(min_entropy, opt.detection_boundary))
-    if(min_entropy < opt.detection_boundary):
+    if min_entropy < opt.detection_boundary:
         print("A backdoored model\n")
-    else: 
+    else:
         print("Not a backdoor model\n")
 
 
-if(__name__ == '__main__'):
+if __name__ == "__main__":
     main()
