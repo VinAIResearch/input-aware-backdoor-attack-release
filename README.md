@@ -12,7 +12,7 @@
 
 Input-aware Dynamic Backdoor Attack is a generic backdoor attack method which breaks the general assumption of current backdoor defense approaches: the universality and uniqueness of backdoor triggers.  
 
-This is an implematation of the NeurIPS paper **[Input-Aware Dynamic Backdoor Attack](https://papers.nips.cc/paper/2020/hash/234e691320c0ad5b45ee3c96d0d7b8f8-Abstract.html)** in PyTorch.
+This is an implematation of the NeurIPS 2020 paper **[Input-Aware Dynamic Backdoor Attack](https://papers.nips.cc/paper/2020/hash/234e691320c0ad5b45ee3c96d0d7b8f8-Abstract.html)** in PyTorch.
 
 - Training and evaluation code.
 - Defense experiments used in the paper.
