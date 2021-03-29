@@ -1,12 +1,32 @@
+
+# Table of contents
+1. [Introduction](##Input-Aware-Dynamic-Backdoor-Attack)
+2. [Requirements](##Requirements)
+3. [Training](##Training-code)
+4. [Evaluation](##Evaluation-code)
+
 # Input-Aware Dynamic Backdoor Attack
 
 <img src="Teaser_fig.png" width="800px"/>
+
+
+Input-aware Dynamic Backdoor Attack is a generic backdoor attack method which breaks the general assumption of current backdoor defense approaches: the universality and uniqueness of backdoor triggers.  
 
 This is an implematation of the NeurIPS paper **[Input-Aware Dynamic Backdoor Attack](https://arxiv.org/abs/2010.08138)** in PyTorch.
 
 - Training and evaluation code.
 - Defense experiments used in the paper.
 - Image regularization tests.
+
+If you find this code is useful for your research, please cite our paper:
+```
+@article{nguyen2020inputaware,
+  title={Input-Aware Dynamic Backdoor Attack},
+  author={Nguyen, Anh and Tran, Anh},
+  booktitle={Proceedings of Advances in Neural Information Processing Systems},
+  year={2020}
+}
+```
 
 ## Requirements
 * Install required python packages
@@ -57,14 +77,12 @@ $ cd defenses/fine_pruning
 $ python fine-pruning-mnist.py --dataset mnist --attack_mode <attackMode> --outfile mnist_<attackMode>.txt
 $ python fine-pruning-cifar10-gtsrb.py --dataset cifar10 --attack_mode <attackMode> --outfile cifar10_<attackMode>.txt
 $ python fine-pruning-gtrsb-gtsrb.py --dataset gtsrb --attack_mode <attackMode> --outfile gtsrb_<attackMode>.txt
-
 ```
 * **Neural Cleanse**
 Run the command
 ```bash
 $ cd defenses/neural_cleanse
 $ python neural_cleanse.py --dataset <datasetName> --attack_mode <attackMode>
-
 ```
 The result will be printed on screen and logged in `results` folder. Note that NeuralCleanse is unstable, and the computed Anomaly Index may vary over different runs.
 
@@ -83,21 +101,9 @@ Run the command
 ```bash
 $ cd behaviors/image_regularization
 $ python test_regularization.py --dataset <datasetName> --attack_mode <attackMode>
-
 ```
 The results will be printed on screen.
 
-## References
-
-If you find this code is useful for your research, please cite our paper
-```
-@article{nguyen2020inputaware,
-  title={Input-Aware Dynamic Backdoor Attack},
-  author={Nguyen, Anh and Tran, Anh},
-  booktitle={Proceedings of Advances in Neural Information Processing Systems},
-  year={2020}
-}
-```
 
 ## Contacts
 
